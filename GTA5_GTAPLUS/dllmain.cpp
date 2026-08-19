@@ -2,12 +2,14 @@
 #include "pch.h"
 #include "sigscan.h"
 #include "script_global.h"
+#include "Logger.hpp"
 
 int* m_bypass_gta_plus;
 bool* m_is_session_started;
 
 DWORD Mainthread(LPVOID lp)
 {
+    base::g_log.attach();
     pattern_batch main_batch;
     main_batch.add("script_globals", "48 8B 8E B8 00 00 00 48 8D 15 ? ? ? ? 49 89 D8", [=](ptr_manage ptr)
     {
@@ -24,10 +26,21 @@ DWORD Mainthread(LPVOID lp)
     main_batch.run();
     while (true)
     {
+        static bool logged_session = false;
         if (*m_is_session_started)
         {
+            if (!logged_session)
+            {
+                base::g_log.send("Info", "Session started");
+                logged_session = true;
+            }
+
             *script_global(1970586).as<int*>() = 1;
             *m_bypass_gta_plus = 0;
+        }
+        else
+        {
+            logged_session = false;
         }
     }
     return 0;
