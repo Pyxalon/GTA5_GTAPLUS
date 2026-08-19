@@ -1,4 +1,4 @@
-﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
+// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
 #include "sigscan.h"
 #include "script_global.h"
@@ -9,13 +9,13 @@ bool* m_is_session_started;
 DWORD Mainthread(LPVOID lp)
 {
     pattern_batch main_batch;
-    main_batch.add("script_globals", "48 8D 05 ? ? ? ? 4E 89 34 F8 49", [=](ptr_manage ptr)
+    main_batch.add("script_globals", "48 8B 8E B8 00 00 00 48 8D 15 ? ? ? ? 49 89 D8", [=](ptr_manage ptr)
     {
-        m_script_globals = ptr.add(3).rip().as<std::int64_t**>();
+        m_script_globals = ptr.add(7).add(3).rip().as<std::int64_t**>();
     });
-    main_batch.add("bypass_gta_plus", "E8 ? ? ? ? 84 C0 74 17 89 F1", [=](ptr_manage ptr)
+    main_batch.add("bypass_gta_plus", "48 8D 15 ? ? ? ? 41 B8 18 02 00 00 E8", [=](ptr_manage ptr)
     {
-        m_bypass_gta_plus = ptr.add(1).rip().add(7).rip().as<int*>();
+        m_bypass_gta_plus = ptr.add(3).rip().as<int*>();
     });
     main_batch.add("is_session_started", "0F B6 05 ? ? ? ? 0A 05 ? ? ? ? 75 2A", [=](ptr_manage ptr)
     {
@@ -26,7 +26,7 @@ DWORD Mainthread(LPVOID lp)
     {
         if (*m_is_session_started)
         {
-            *script_global(1963593).as<int*>() = 1;
+            *script_global(1970586).as<int*>() = 1;
             *m_bypass_gta_plus = 0;
         }
     }
